@@ -1,7 +1,10 @@
 
 #include <fcntl.h>
 #include <stdlib.h>
+
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 #include "rdata.h"
 #include "rdata_io_unistd.h"
@@ -14,7 +17,9 @@
 #define UNISTD_OPEN_OPTIONS O_RDONLY
 #endif
 
-#if defined _WIN32 || defined _AIX
+#ifdef _MSC_VER
+#define lseek _lseek
+#elif defined _WIN32 || defined _AIX
 #define lseek lseek64
 #endif
 
@@ -59,7 +64,7 @@ ssize_t unistd_read_handler(void *buf, size_t nbyte, void *io_ctx) {
     return out;
 }
 
-rdata_error_t unistd_update_handler(long file_size, 
+rdata_error_t unistd_update_handler(long file_size,
         rdata_progress_handler progress_handler, void *user_ctx,
         void *io_ctx) {
     if (!progress_handler)
